@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2d3436">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Öğretici Oyunlar">
+    <title>Öğretici Oyunlar</title>
+    <link rel="icon" type="image/png" href="assets/icons/app-icon.png">
+    <link rel="apple-touch-icon" href="assets/icons/app-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <script src="js/confetti.browser.min.js?v=1"></script>
+    <script src="js/icons.js?v=1"></script>
+
+    <link rel="stylesheet" href="style.css?v=1">
+</head>
+
+<body>
+
+    <div id="app">
+        <!-- GLOBAL HEADER -->
+        <header id="app-header">
+            <div id="header-title">Çarpım Ustası</div>
+            <div id="header-stats" style="display: none;">
+                <span id="timer-display">00:00</span>
+                <span id="score-display">Puan: 0</span>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main id="app-main">
+            <!-- SCENE 1: INTRO -->
+            <div id="scene-intro" class="scene active">
+                <button class="intro-btn" onclick="app.showScene('scene-level-select')">
+                    Çarpım Tablosu<br>Öğrenme Oyunu
+                </button>
+            </div>
+
+            <!-- SCENE 2: LEVEL SELECT -->
+            <div id="scene-level-select" class="scene">
+                <div class="level-grid">
+                    <!-- JS ile doldurulacak -->
+                </div>
+            </div>
+
+            <!-- SCENE 3: GAME -->
+            <div id="scene-game" class="scene">
+                <div class="game-container">
+                    <div class="column" id="questions-col">
+                        <!-- Sorular buraya -->
+                    </div>
+                    <div class="column" id="answers-col">
+                        <!-- Cevaplar buraya -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- GLOBAL FOOTER -->
+        <footer id="app-footer">
+            <!-- JS ile dinamik butonlar gelecek -->
+        </footer>
+
+        <!-- MODALS -->
+
+        <!-- SUCCESS MODAL -->
+        <div id="modal-success" class="modal">
+            <div class="modal-content">
+                <h2>Tebrikler!</h2>
+                <div class="stars" id="modal-stars">⭐⭐⭐</div>
+                <div class="score-final" id="modal-final-score">Süre: 30sn | Puan: 100</div>
+                <button onclick="app.showScene('scene-level-select')">Diğer Seviyeleri Seç</button>
+            </div>
+        </div>
+
+        <!-- ABOUT MODAL -->
+        <div id="modal-about" class="modal">
+            <div class="modal-content">
+                <h2>Hakkında</h2>
+                <span class="email-text">bekirsengonul66@gmail.com</span>
+                <p
+                    style="font-family: 'CaveatBrush-Regular', cursive; font-style: italic; color: #555; margin-top: 10px;">
+                    Ömer Kaan'a sevgilerimle..
+                </p>
+                <button onclick="app.closeAllModals()">Kapat</button>
+            </div>
+        </div>
+
+        <!-- SETTINGS MODAL -->
+        <div id="modal-settings" class="modal">
+            <div class="modal-content">
+                <h2>Ayarlar</h2>
+                <button id="mute-btn" onclick="app.toggleMute()" style="margin-bottom: 10px;"></button>
+                <button class="reset-btn" onclick="app.resetProgress()" style="margin-bottom: 10px;">İlerlemeyi
+                    Sıfırla</button>
+                <button onclick="app.closeAllModals()">Kapat</button>
+            </div>
+        </div>
+
+    </div>
+
+    <audio id="bg-music" src="assets/music.mp3" loop preload="auto"></audio>
+    <script src="script.js?v=1"></script>
+
+</body>
+
+</html>
