@@ -288,9 +288,14 @@ body {
 
 /* Mobil dokunma için güçlü vurgulama */
 .question-slot.highlight {
-    box-shadow: inset 0px 0px 20px 5px rgba(255, 200, 0, 0.8) !important;
-    border-color: #FFB900 !important;
-    background-color: #fffef0 !important;
+    box-shadow: inset 0px 0px 20px 5px rgba(255, 200, 0, 0.9) !important;
+    border: 5px solid #FFB900 !important;
+    /* Daha kalın border */
+    background-color: #fff9e6 !important;
+    /* Daha belirgin sarı */
+    transform: scale(1.05);
+    /* Hafif büyütme */
+    transition: all 0.15s ease !important;
 }
 
 .question-slot.filled {

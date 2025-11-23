@@ -96,6 +96,7 @@ const app = {
         this.updateUIForScene(sceneId);
 
         // Scene Specific Logic
+        // Scene Specific Logic
         if (sceneId !== 'scene-intro') {
             this.playTone('swoosh');
             this.playMusic();
@@ -122,34 +123,6 @@ const app = {
 
             // FOOTER: Row 1: [Hakkında] [Ayarlar], Row 2: [Oyunu Kapat]
             const btnAbout = document.createElement('button');
-            btnAbout.className = 'footer-btn';
-            btnAbout.innerHTML = Icons.get('info-circle') + ' Hakkında';
-            btnAbout.onclick = () => this.showModal('modal-about');
-
-            const btnSettings = document.createElement('button');
-            btnSettings.className = 'footer-btn';
-            btnSettings.innerHTML = Icons.get('gear') + ' Ayarlar';
-            btnSettings.onclick = () => this.showModal('modal-settings');
-
-            const btnCloseGame = document.createElement('button');
-            btnCloseGame.className = 'footer-btn-full';
-            btnCloseGame.innerHTML = Icons.get('xmark') + ' Oyunu Kapat';
-            btnCloseGame.onclick = () => {
-                // Tarayıcılarda window.close() çalışmaz, APK'da çalışır
-                if (confirm('Uygulamayı kapatmak için tarayıcı sekmesini/uygulamayı kapatabilirsiniz.')) {
-                    window.close(); // APK için deneme
-                }
-            };
-
-            footer.appendChild(btnAbout);
-            footer.appendChild(btnSettings);
-            footer.appendChild(btnCloseGame);
-
-        } else if (sceneId === 'scene-level-select') {
-            // HEADER
-            headerTitle.style.display = 'block';
-            headerTitle.textContent = 'Çarpım Tablosu';
-            headerStats.style.display = 'none';
 
             // FOOTER: [Oyundan Çık]
             const btnExit = document.createElement('button');
@@ -158,6 +131,7 @@ const app = {
             btnExit.onclick = () => this.showScene('scene-intro');
 
             footer.appendChild(btnExit);
+
 
         } else if (sceneId === 'scene-game') {
             // HEADER
@@ -393,11 +367,25 @@ const app = {
         const touch = e.touches[0];
         app.moveClone(touch.clientX, touch.clientY);
 
+        // Her harekette önce tüm vurgulamaları temizle
         app.clearHoverEffects();
+
+        // Touch noktasının altındaki elementi bul
         const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
         const questionSlot = elemBelow ? elemBelow.closest('.question-slot') : null;
+
         if (questionSlot && !questionSlot.classList.contains('filled')) {
-            questionSlot.classList.add('highlight'); // CSS class kullanımı - mobilde daha görünür
+            // CSS class ekle
+            questionSlot.classList.add('highlight');
+
+            // Debug için konsola yaz (mobil tarayıcıda görmek için)
+            console.log('Highlighting:', questionSlot.textContent);
+
+            // Ekstra olarak inline style da ekle (daha güçlü, mobilde daha görünür)
+            questionSlot.style.border = '5px solid #FFB900';
+            questionSlot.style.backgroundColor = '#fff9e6';
+            questionSlot.style.boxShadow = 'inset 0px 0px 20px 5px rgba(255, 200, 0, 0.9)';
+            questionSlot.style.transform = 'scale(1.05)';
         }
     },
 
@@ -442,7 +430,11 @@ const app = {
     clearHoverEffects: function () {
         document.querySelectorAll('.question-slot').forEach(slot => {
             slot.style.boxShadow = '';
-            slot.classList.remove('highlight'); // CSS class'ı kaldır
+            slot.classList.remove('highlight');
+            // Inline stilleri de temizle
+            slot.style.border = '';
+            slot.style.backgroundColor = '';
+            slot.style.transform = '';
         });
     },
 
