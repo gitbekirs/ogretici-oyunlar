@@ -96,7 +96,6 @@ const app = {
         this.updateUIForScene(sceneId);
 
         // Scene Specific Logic
-        // Scene Specific Logic
         if (sceneId !== 'scene-intro') {
             this.playTone('swoosh');
             this.playMusic();
@@ -121,7 +120,7 @@ const app = {
             headerTitle.textContent = 'Oyun Seçiniz';
             headerStats.style.display = 'none';
 
-            // FOOTER: [Hakkında] [Ayarlar]
+            // FOOTER: Row 1: [Hakkında] [Ayarlar], Row 2: [Oyunu Kapat]
             const btnAbout = document.createElement('button');
             btnAbout.className = 'footer-btn';
             btnAbout.innerHTML = Icons.get('info-circle') + ' Hakkında';
@@ -132,8 +131,19 @@ const app = {
             btnSettings.innerHTML = Icons.get('gear') + ' Ayarlar';
             btnSettings.onclick = () => this.showModal('modal-settings');
 
+            const btnCloseGame = document.createElement('button');
+            btnCloseGame.className = 'footer-btn-full';
+            btnCloseGame.innerHTML = Icons.get('xmark') + ' Oyunu Kapat';
+            btnCloseGame.onclick = () => {
+                // Tarayıcılarda window.close() çalışmaz, APK'da çalışır
+                if (confirm('Uygulamayı kapatmak için tarayıcı sekmesini/uygulamayı kapatabilirsiniz.')) {
+                    window.close(); // APK için deneme
+                }
+            };
+
             footer.appendChild(btnAbout);
             footer.appendChild(btnSettings);
+            footer.appendChild(btnCloseGame);
 
         } else if (sceneId === 'scene-level-select') {
             // HEADER
@@ -144,7 +154,7 @@ const app = {
             // FOOTER: [Oyundan Çık]
             const btnExit = document.createElement('button');
             btnExit.className = 'footer-btn';
-            btnExit.innerHTML = Icons.get('house') + ' Çıkış';
+            btnExit.innerHTML = Icons.get('house') + ' Oyundan Çık';
             btnExit.onclick = () => this.showScene('scene-intro');
 
             footer.appendChild(btnExit);
@@ -387,7 +397,7 @@ const app = {
         const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
         const questionSlot = elemBelow ? elemBelow.closest('.question-slot') : null;
         if (questionSlot && !questionSlot.classList.contains('filled')) {
-            questionSlot.style.boxShadow = `inset 0px 0px 15px 2px ${app.draggedItemColor}`;
+            questionSlot.classList.add('highlight'); // CSS class kullanımı - mobilde daha görünür
         }
     },
 
@@ -430,7 +440,10 @@ const app = {
     },
 
     clearHoverEffects: function () {
-        document.querySelectorAll('.question-slot').forEach(slot => slot.style.boxShadow = '');
+        document.querySelectorAll('.question-slot').forEach(slot => {
+            slot.style.boxShadow = '';
+            slot.classList.remove('highlight'); // CSS class'ı kaldır
+        });
     },
 
     checkAnswer: function (slot, val, itemElement) {
