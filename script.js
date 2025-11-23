@@ -96,7 +96,6 @@ const app = {
         this.updateUIForScene(sceneId);
 
         // Scene Specific Logic
-        // Scene Specific Logic
         if (sceneId !== 'scene-intro') {
             this.playTone('swoosh');
             this.playMusic();
@@ -123,15 +122,42 @@ const app = {
 
             // FOOTER: Row 1: [Hakkında] [Ayarlar], Row 2: [Oyunu Kapat]
             const btnAbout = document.createElement('button');
+            btnAbout.className = 'footer-btn';
+            btnAbout.innerHTML = Icons.get('info-circle') + ' Hakkında';
+            btnAbout.onclick = () => this.showModal('modal-about');
+
+            const btnSettings = document.createElement('button');
+            btnSettings.className = 'footer-btn';
+            btnSettings.innerHTML = Icons.get('gear') + ' Ayarlar';
+            btnSettings.onclick = () => this.showModal('modal-settings');
+
+            const btnCloseGame = document.createElement('button');
+            btnCloseGame.className = 'footer-btn-full';
+            btnCloseGame.innerHTML = Icons.get('xmark') + ' Oyunu Kapat';
+            btnCloseGame.onclick = () => {
+                // Tarayıcılarda window.close() çalışmaz, APK'da çalışır
+                if (confirm('Uygulamayı kapatmak için tarayıcı sekmesini/uygulamayı kapatabilirsiniz.')) {
+                    window.close(); // APK için deneme
+                }
+            };
+
+            footer.appendChild(btnAbout);
+            footer.appendChild(btnSettings);
+            footer.appendChild(btnCloseGame);
+
+        } else if (sceneId === 'scene-level-select') {
+            // HEADER
+            headerTitle.style.display = 'block';
+            headerTitle.textContent = 'Çarpım Tablosu';
+            headerStats.style.display = 'none';
 
             // FOOTER: [Oyundan Çık]
             const btnExit = document.createElement('button');
             btnExit.className = 'footer-btn';
-            btnExit.innerHTML = Icons.get('house') + ' Oyundan Çık';
+            btnExit.innerHTML = Icons.get('arrow-left') + ' Oyundan Çık';
             btnExit.onclick = () => this.showScene('scene-intro');
 
             footer.appendChild(btnExit);
-
 
         } else if (sceneId === 'scene-game') {
             // HEADER
@@ -345,67 +371,73 @@ const app = {
     handleTouchStart: function (e) {
         e.preventDefault();
         const touch = e.touches[0];
+
+        // Capture dragged item and its color
         app.draggedItem = this;
         app.draggedItemColor = window.getComputedStyle(this).backgroundColor;
         app.playTone('click');
 
+        // Create clone for visual feedback
         app.clone = this.cloneNode(true);
         app.clone.classList.add('dragging');
         document.body.appendChild(app.clone);
 
+        // Calculate touch offset
         const rect = this.getBoundingClientRect();
         app.touchOffset.x = touch.clientX - rect.left;
         app.touchOffset.y = touch.clientY - rect.top;
 
         app.moveClone(touch.clientX, touch.clientY);
-        this.style.opacity = '0';
+
+        // Optional: Add slight scale effect to original item
+        this.style.opacity = '0.3';
+        this.style.transform = 'scale(0.95)';
     },
 
     handleTouchMove: function (e) {
         e.preventDefault();
         if (!app.clone) return;
+
         const touch = e.touches[0];
         app.moveClone(touch.clientX, touch.clientY);
 
-        // Her harekette önce tüm vurgulamaları temizle
+        // Clear all previous highlights
         app.clearHoverEffects();
 
-        // Touch noktasının altındaki elementi bul
+        // Get element under finger
         const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        // Hit testing: Find valid drop zone
         const questionSlot = elemBelow ? elemBelow.closest('.question-slot') : null;
 
+        // Visual Feedback: Apply boxShadow with draggedItemColor
         if (questionSlot && !questionSlot.classList.contains('filled')) {
-            // CSS class ekle
-            questionSlot.classList.add('highlight');
-
-            // Debug için konsola yaz (mobil tarayıcıda görmek için)
-            console.log('Highlighting:', questionSlot.textContent);
-
-            // Ekstra olarak inline style da ekle (daha güçlü, mobilde daha görünür)
-            questionSlot.style.border = '5px solid #FFB900';
-            questionSlot.style.backgroundColor = '#fff9e6';
-            questionSlot.style.boxShadow = 'inset 0px 0px 20px 5px rgba(255, 200, 0, 0.9)';
-            questionSlot.style.transform = 'scale(1.05)';
+            questionSlot.style.boxShadow = `inset 0px 0px 15px 2px ${app.draggedItemColor}`;
         }
     },
 
     handleTouchEnd: function (e) {
         if (!app.clone) return;
 
-        app.clearHoverEffects();
-
         const touch = e.changedTouches[0];
+
+        // Hide clone temporarily to find element underneath
         app.clone.style.display = 'none';
         const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
         app.clone.style.display = 'block';
 
+        // Find drop zone under finger
         const questionSlot = elemBelow ? elemBelow.closest('.question-slot') : null;
 
+        // Execute drop logic
         if (questionSlot && !questionSlot.classList.contains('filled')) {
             app.checkAnswer(questionSlot, app.draggedItem.dataset.val, app.draggedItem);
         } else {
             app.resetDrag();
         }
+
+        // Cleanup: Remove all highlights and clone
+        app.clearHoverEffects();
 
         if (app.clone) {
             app.clone.remove();
@@ -423,18 +455,15 @@ const app = {
     resetDrag: function () {
         if (app.draggedItem) {
             app.draggedItem.style.opacity = '1';
+            app.draggedItem.style.transform = 'scale(1)';
             app.draggedItem = null;
         }
     },
 
     clearHoverEffects: function () {
+        // Clear all boxShadow highlights from drop zones
         document.querySelectorAll('.question-slot').forEach(slot => {
             slot.style.boxShadow = '';
-            slot.classList.remove('highlight');
-            // Inline stilleri de temizle
-            slot.style.border = '';
-            slot.style.backgroundColor = '';
-            slot.style.transform = '';
         });
     },
 
